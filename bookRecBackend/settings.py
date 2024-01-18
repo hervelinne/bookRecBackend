@@ -41,17 +41,65 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    'bookRec', 
+    'rest_framework',
+    'rest_framework_simplejwt',
+    # 'rest_framework.authtoken',
+# Applications Created 
+    'bookRec',  
     
-    'rest_framework', 
     'corsheaders', 
-    'rest_framework_simplejwt.token_blacklist'
-
+    # 'rest_framework_simplejwt.token_blacklist', 
+    
+    
+    'mongo_auth',
+    
 ]
+REST_FRAMEWORK = {
+      'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'django.contrib.auth.backends.ModelBackend', 
+       ],
+ }
+
+SIMPLE_JWT = {
+     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+     'ROTATE_REFRESH_TOKENS': True,
+     'BLACKLIST_AFTER_ROTATION': True,
+    #  'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    # 'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=15),
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
+    # 'ROTATE_REFRESH_TOKENS': False,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'id',
+    'UPDATE_LAST_LOGIN': False,
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+}
+# id fields 
+#USER_ID_FIELD = '_id'
+
+#Authentication backends
+# AUTHENTICATION_BACKENDS = (
+#     'django.contrib.auth.backends.ModelBackend',
+#     )
+
+## User Model 
+AUTH_USER_MODEL = 'bookRec.User'
+
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Add the origin of your React app
 ]
+
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -80,7 +128,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -111,12 +159,19 @@ WSGI_APPLICATION = 'bookRecBackend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+      'ENGINE': 'djongo',
+      'NAME': 'bookRec',
+   }
 }
+
 
 
 # Password validation
@@ -159,17 +214,49 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-REST_FRAMEWORK = {
-     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-      ],
-}
 
-SIMPLE_JWT = {
-     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
-     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-     'ROTATE_REFRESH_TOKENS': True,
-     'BLACKLIST_AFTER_ROTATION': True
-}
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': (
+#         'rest_framework.permissions.IsAuthenticated'
+#         ),
+#      'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'rest_framework.authentication.SessionAuthentication',
+#       ),
+# }
+
+
+# # Minimal settings (all mandatory)
+# MANGO_JWT_SETTINGS = {
+#     "db_host": "localhost", # Use srv host if connecting with MongoDB Atlas Cluster
+#     "db_port": "27017", # Don't include this field if connecting with MongoDB Atlas Cluster
+#     "db_name": "bookRec",
+#     "db_user": "admin",
+#     "db_pass": "rootroot"
+# }
+# MANGO_JWT_SETTINGS = {
+#     "db_host": "127.0.0.1",
+#     "db_port": "27017",
+#     "db_name": "for_example_auth_db",
+#     "db_user": "admin",
+#     "db_pass": "rootroot", }
+#"auth_collection": "auth_user", # default is "user_profile"
+    #"fields": ( "email","username", "password"),
+#   "secondary_username_field": "username" # default is None
+#  "authSourse": "admin"# default
+#     "jwt_secret": "secret", # default
+#     "jwt_life": 7, # default (in days)
+# # Or use Advanced Settings (including optional settings)
+# MANGO_JWT_SETTINGS = {
+#     "db_host": "localhost:27017",
+#     "db_port": "27017",
+#     "db_name": "bookRec",
+#     "db_user": "",
+#     "db_pass": "",
+#     "auth_collection": "user_profile", # default is "user_profile"
+#     "fields": ( "email","password"), # default
+#     "jwt_secret": "secret", # default
+#     "jwt_life": 7, # default (in days)
+#     "secondary_username_field": "mobile" # default is None
+# }

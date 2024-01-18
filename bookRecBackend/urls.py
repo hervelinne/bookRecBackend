@@ -15,17 +15,31 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include 
+from bookRec.urls import post_router
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt import views as jwt_views
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView 
+from bookRec.views import CustomTokenObtainPairView
+from django.views.generic import TemplateView
+
+router = DefaultRouter()
+# Posts 
+router.registry.extend(post_router.registry)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('', include('bookRec.urls')),
-    path('api/', include('bookRecBackend.api.urls')), 
-    path('token/', 
-          jwt_views.TokenObtainPairView.as_view(), 
-          name ='token_obtain_pair'),
-     path('token/refresh/', 
-          jwt_views.TokenRefreshView.as_view(), 
-          name ='token_refresh'),
     path('', include('bookRec.urls')),
+#    path('', include('bookRecML.urls')),
+    path('api/', include(router.urls)),
+    # path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
+    # path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    #path('mongo_auth/', include('mongo_auth.urls')),
+    
+     # Add a catch-all route for React Router
+    path('<path:path>', TemplateView.as_view(template_name='index.html')),
 ]
