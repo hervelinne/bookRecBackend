@@ -18,6 +18,7 @@ urlpatterns = [
     path('api/signup/', signup_view, name="signup"),
     path('api/books_list/', get_books, name="book"),
     path('api/get_books_by_keyword/', views.get_books_by_keyword, name="get_books_by_keyword"),
+    path('api/get_books_by_keyword_genre/', views.get_books_by_keyword_genre, name="get_books_by_keyword_genre"),
     path('api/save_book/', save_book, name='save_book'),
     path('api/get_saved_books/', get_saved_books, name='get_saved_books'),
     path('api/remove_saved_book/', remove_saved_book, name='remove_saved_book'),

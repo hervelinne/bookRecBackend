@@ -41,7 +41,7 @@ import joblib # for saving algorithm and preprocessing objects
 import seaborn as sns
 from .recommendation_logic import recommend2, recommend
 from sklearn.metrics import mean_squared_error
-
+from django.db.models import Q
 
 
 from django.conf import settings
@@ -153,7 +153,7 @@ def login_view(request):
         # token['user_id'] = str(user._id)
         access_token = str(refresh.access_token)
         refresh_token_str = str(refresh)
-        return Response({'access_token': access_token, 'refresh': refresh_token_str, 'user_id': user.id,   'user': serializer.data}, status=status.HTTP_200_OK)
+        return Response({'access_token': access_token, 'refresh': refresh_token_str, 'user_id': user.id, 'user': serializer.data}, status=status.HTTP_200_OK)
     else:
         return Response({'error': 'Invalid email or password'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -180,6 +180,26 @@ def get_books(req):
     
     return paginator.get_paginated_response(serializer.data)
 
+
+@api_view(['GET'])
+def get_books_by_keyword_genre(request):
+    try:
+        keyword = request.GET.get('keyword')
+
+        # Filter books based on the keyword
+        books = Book.objects.filter(Q(book__icontains=keyword) | Q(author__icontains=keyword)| Q(genres__icontains=keyword))
+
+        # Pagination logic
+        paginator = PageNumberPagination()
+        paginator.page_size = 9  # Set the number of books per page
+        result_page = paginator.paginate_queryset(books, request)
+
+        # Create a response with paginated book details
+        serializer = BookSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+    except Exception as e:
+        return Response({'error': f'Error fetching books by keyword: {str(e)}'}, status=500)
 @api_view(['GET'])
 def get_books_by_keyword(request):
     
